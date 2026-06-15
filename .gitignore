@@ -1,0 +1,11 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Model checkpoints & configs
+*.pth
+*.json
+
+# Data
+*.h5
+*.hdf5
