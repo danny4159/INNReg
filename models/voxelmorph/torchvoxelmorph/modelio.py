@@ -11,7 +11,8 @@ def store_config_args(func):
     model loading - see LoadableModel.
     """
 
-    attrs, varargs, varkw, defaults = inspect.getargspec(func)
+    full = inspect.getfullargspec(func)
+    attrs, varargs, varkw, defaults = full.args, full.varargs, full.varkw, full.defaults
 
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):

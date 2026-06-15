@@ -114,8 +114,6 @@ class REGISTRATIONModel(BaseModel):
         self.loss_G = self.compute_INN_loss() * self.opt.w_G 
 
         # R loss
-        mask = (self.real_B>-0.95) + (y_pred[0] >-0.95)
-        mask2 = (self.idt_B>-0.95) + (y_pred[0] >-0.95)
         self.loss_MMR = (-torch.log(self.opt.w_barrier - self.criterionNMI(y_output[0], self.real_B)) )* self.opt.w_MMR
         self.loss_R = self.calculate_L1_loss(y_pred[0],self.real_B)*1.0 + self.calculate_L1_loss(self.fake_A, y_output[0])*1.0 #+ self.loss_local*1.0
         self.loss_smooth = smooothing_loss(y_pred[1]) * self.opt.w_smooth #10.0 # 2.0 #0.20
@@ -126,7 +124,8 @@ class REGISTRATIONModel(BaseModel):
         if self.opt.optz_G:
             self.optimizer_G.step()
         if self.opt.optz_R:
-   
+            self.optimizer_R.step()
+
     def set_input(self, input):
        
         AtoB = self.opt.direction == 'AtoB'

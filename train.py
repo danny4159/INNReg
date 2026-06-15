@@ -1,4 +1,5 @@
 import time
+import sys
 import torch
 import os
 import json
@@ -73,10 +74,16 @@ def train(opt):
     writer.close()
 
 if __name__ == '__main__':
+    import argparse as _ap
+    _parser = _ap.ArgumentParser(add_help=False)
+    _parser.add_argument('--pro_name', type=str, required=True)
+    _parser.add_argument('--save_path', type=str, default='Checkpoint')
+    _pre, remaining = _parser.parse_known_args()
+    sys.argv = [sys.argv[0]] + remaining  # TrainOptions에 pro_name/save_path가 전달되지 않도록
 
-    visual_path = '/bask/projects/d/duanj-ai-imaging/mxg/checkpoints/VisualTB/a_InnReg'
-    save_path = 'Checkpoint'
-    pro_name = '***' 
+    save_path = _pre.save_path
+    pro_name  = _pre.pro_name
+    visual_path = os.path.join(save_path, pro_name, 'tensorboard')
 
     if not os.path.exists(visual_path):
         os.makedirs(visual_path)
@@ -87,7 +94,13 @@ if __name__ == '__main__':
 
     opt.name = pro_name
     opt.checkpoints_dir = save_path
-    
+
+    # gpu_ids가 JSON에서 string으로 덮어씌워질 수 있으므로 재처리
+    if isinstance(opt.gpu_ids, str):
+        opt.gpu_ids = [int(i) for i in opt.gpu_ids.split(',') if int(i) >= 0]
+    if opt.gpu_ids:
+        torch.cuda.set_device(opt.gpu_ids[0])
+
     for arg in vars(opt):
         print(format(arg, '<20'), format(str(getattr(opt, arg)), '<'))   # str, arg_type
     

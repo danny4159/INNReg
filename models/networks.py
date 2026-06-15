@@ -5,7 +5,10 @@ from torch.nn import init
 import functools
 from torch.optim import lr_scheduler
 import numpy as np
-from .stylegan_networks import StyleGAN2Discriminator, StyleGAN2Generator, TileStyleGAN2Discriminator
+try:
+    from .stylegan_networks import StyleGAN2Discriminator, StyleGAN2Generator, TileStyleGAN2Discriminator
+except ImportError:
+    StyleGAN2Discriminator = StyleGAN2Generator = TileStyleGAN2Discriminator = None
 # from .modules import InvertibleConv1x1
 from .INN_model import InvISPNet
 
