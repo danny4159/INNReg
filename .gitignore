@@ -7,6 +7,7 @@ __pycache__/
 *.json
 Checkpoint/
 checkpoints/
+Results_NIfTI/
 
 # Data
 *.h5

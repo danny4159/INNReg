@@ -113,8 +113,16 @@ def test(opt, save_dir):
 # ── entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
-    save_path = 'Checkpoint'
-    pro_name  = '***'          # ← change to your experiment name
+    import argparse as _ap
+    _parser = _ap.ArgumentParser(add_help=False)
+    _parser.add_argument('--pro_name', type=str, required=True)
+    _parser.add_argument('--save_path', type=str, default='Checkpoint')
+    _pre, remaining = _parser.parse_known_args()
+    import sys
+    sys.argv = [sys.argv[0]] + remaining
+
+    save_path = _pre.save_path
+    pro_name  = _pre.pro_name
 
     result_dir = os.path.join('Results_NIfTI', pro_name)
     os.makedirs(result_dir, exist_ok=True)
@@ -123,8 +131,11 @@ if __name__ == '__main__':
     with open(os.path.join(save_path, pro_name, 'test_setting.json'), 'r') as f:
         opt.__dict__.update(json.load(f))
 
-    opt.name           = pro_name
+    opt.name            = pro_name
     opt.checkpoints_dir = save_path
+
+    if isinstance(opt.gpu_ids, str):
+        opt.gpu_ids = [int(i) for i in opt.gpu_ids.split(',') if int(i) >= 0]
 
     for arg in vars(opt):
         print(f'{arg:<25} {str(getattr(opt, arg))}')
