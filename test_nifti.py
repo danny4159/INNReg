@@ -55,11 +55,12 @@ def flush_patient(patient_id, accum, save_dir):
         arr = np.stack(accum[key], axis=-1)   # (2, H, W, S)
         return arr.transpose(1, 2, 3, 0)      # (H, W, S, 2)
 
-    _save_nifti(stack_scalar('moving'),     os.path.join(patient_dir, 'moving.nii.gz'))
-    _save_nifti(stack_scalar('fixed'),      os.path.join(patient_dir, 'fixed.nii.gz'))
-    _save_nifti(stack_scalar('translated'), os.path.join(patient_dir, 'translated.nii.gz'))
-    _save_nifti(stack_scalar('registered'), os.path.join(patient_dir, 'registered.nii.gz'))
-    _save_nifti(stack_vector('dvf'),        os.path.join(patient_dir, 'dvf.nii.gz'))
+    _save_nifti(stack_scalar('moving'),       os.path.join(patient_dir, 'moving.nii.gz'))
+    _save_nifti(stack_scalar('fixed'),        os.path.join(patient_dir, 'fixed.nii.gz'))
+    _save_nifti(stack_scalar('translated'),   os.path.join(patient_dir, 'translated.nii.gz'))
+    _save_nifti(stack_scalar('registered'),   os.path.join(patient_dir, 'registered.nii.gz'))
+    _save_nifti(stack_scalar('registered_A'), os.path.join(patient_dir, 'registered_A.nii.gz'))
+    _save_nifti(stack_vector('dvf'),          os.path.join(patient_dir, 'dvf.nii.gz'))
 
     print(f'  saved {patient_id} ({len(accum["moving"])} slices) → {patient_dir}')
 
@@ -102,7 +103,8 @@ def test(opt, save_dir):
         accum['moving'].append(_to_np(visuals['real_A'])[0])      # (H, W)
         accum['fixed'].append(_to_np(visuals['real_B'])[0])       # (H, W)
         accum['translated'].append(_to_np(visuals['fake_B'])[0])  # (H, W)
-        accum['registered'].append(_to_np(visuals['registered'])[0])  # (H, W)
+        accum['registered'].append(_to_np(visuals['registered'])[0])  # (H, W): ST(fake_B, DVF)
+        accum['registered_A'].append(_to_np(visuals['regA'])[0])      # (H, W): ST(real_A, DVF) — T2 appearance, aligned to T1
         accum['dvf'].append(_to_np(visuals['dvf']))               # (2, H, W)
 
     # flush last patient
